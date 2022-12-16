@@ -3,52 +3,26 @@ package main
 import (
 	"fmt"
 	"github.com/jroimartin/gocui"
-	"gos3/config"
-	"gos3/pkg/ceph"
+	"gos3/widget"
 	"log"
 	"os"
 )
 
 func init() {
-	err := ceph.InitAwsClient(config.OSSConfig{
-		Endpoint:                  "10.198.30.156",
-		AccessKeyID:               "spe",
-		AccessKeySecret:           "Spe2077@#$%",
-		Bucket:                    "spe_data",
-		S3ForcePathStyle:          true,
-		InsecureSkipVerify:        true,
-		DisableEndpointHostPrefix: true,
-	})
-	if err != nil {
-		panic(err)
-	}
+	//err := ceph.InitAwsClient(config.OSSConfig{
+	//	Endpoint:                  "10.198.30.156",
+	//	AccessKeyID:               "spe",
+	//	AccessKeySecret:           "Spe2077@#$%",
+	//	Bucket:                    "spe_data",
+	//	S3ForcePathStyle:          true,
+	//	InsecureSkipVerify:        true,
+	//	DisableEndpointHostPrefix: true,
+	//})
+	//if err != nil {
+	//	panic(err)
+	//}
 	logFile, _ := os.Create("/tmp/gos3.log")
 	log.SetOutput(logFile)
-}
-
-func layout(g *gocui.Gui) error {
-	maxX, maxY := g.Size()
-	if v, err := g.SetView("main", 1, 1, maxX-1, maxY-1); err != nil {
-		if err != gocui.ErrUnknownView {
-			return err
-		}
-		//v.Wrap = true
-		v.Highlight = true
-		v.SelBgColor = gocui.ColorGreen
-		v.SelFgColor = gocui.ColorBlack
-
-		//res, err := ceph.Client.ListBucket()
-		//if err != nil {
-		//	log.Panicln(err)
-		//}
-		for _, b := range []string{"aaa", "bbb", "ccc", "ddd"} {
-			fmt.Fprintf(v, "%v\n", b)
-		}
-		if _, err := g.SetCurrentView("main"); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 func quit(g *gocui.Gui, v *gocui.View) error {
@@ -64,7 +38,11 @@ func main() {
 
 	g.Cursor = true
 
-	g.SetManagerFunc(layout)
+	cf := widget.NewConformWin("test", "to be or not to be ?")
+	g.SetManager(&widget.Main{})
+	if err := cf.Show(g); err != nil {
+		log.Panicln(err)
+	}
 
 	if err := initKeyBinding(g); err != nil {
 		log.Panicln(err)
@@ -80,20 +58,20 @@ func initKeyBinding(g *gocui.Gui) (err error) {
 		return
 	}
 
-	if err = g.SetKeybinding("main", gocui.KeyEnter, gocui.ModNone, showMsg); err != nil {
-		return
-	}
-
-	if err = g.SetKeybinding("msg", gocui.KeyCtrlQ, gocui.ModNone, delMsg); err != nil {
-		return
-	}
-
-	if err = g.SetKeybinding("main", gocui.KeyArrowDown, gocui.ModNone, cursorDown); err != nil {
-		return
-	}
-	if err = g.SetKeybinding("main", gocui.KeyArrowUp, gocui.ModNone, cursorUp); err != nil {
-		return
-	}
+	//if err = g.SetKeybinding("main", gocui.KeyEnter, gocui.ModNone, showMsg); err != nil {
+	//	return
+	//}
+	//
+	//if err = g.SetKeybinding("msg", gocui.KeyCtrlQ, gocui.ModNone, delMsg); err != nil {
+	//	return
+	//}
+	//
+	//if err = g.SetKeybinding("main", gocui.KeyArrowDown, gocui.ModNone, cursorDown); err != nil {
+	//	return
+	//}
+	//if err = g.SetKeybinding("main", gocui.KeyArrowUp, gocui.ModNone, cursorUp); err != nil {
+	//	return
+	//}
 
 	return
 }
